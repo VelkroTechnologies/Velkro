@@ -3,7 +3,7 @@ workspace "Velkro"
 
 	configurations
 	{
-		"Distribution", -- The default configuration
+		"Distribution",
 		"Release",
 		"Debug",		
 	}
@@ -72,7 +72,7 @@ project "Runtime"
 
 	links
 	{
-		"Velkro"
+		"Velkro",
 	}
 
 	filter "system:windows"
@@ -88,6 +88,11 @@ project "Runtime"
 		defines
 		{
 			"VLK_PLATFORM_LINUX"
+		}
+
+		links
+		{
+			"X11"
 		}
 
 	filter "configurations:Debug"

@@ -4,7 +4,7 @@
 
 int main()
 {
-	std::cout << "Welcome to Velkro Engine =D" << '\n';
+	Velkro::VLK_INFO("lalala");
 
 	Velkro::Application* app = new Velkro::Application();
 	
