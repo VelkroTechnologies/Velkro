@@ -2,7 +2,7 @@
 
 #include <ctime>
 #include <sstream>
-
+#include <iomanip>
 #include <cstdarg>
 
 namespace Velkro
@@ -82,17 +82,13 @@ namespace Velkro
     private:
         static std::string GetTimeStamp()
         {
-            time_t now = time(0);
+            std::time_t t = std::time(nullptr);
 
-            tm *ltm = localtime(&now);
+            std::stringstream timeStr;
 
-            std::stringstream time;
-            
-            time << ltm->tm_hour << ":";
-            time << ltm->tm_min << ":";
-            time << ltm->tm_sec;
+            timeStr << std::put_time(std::gmtime(&t), "%c");
 
-            return "[" + time.str() + "]";
+            return "[" + timeStr.str() + "]";
         }
     };
 }

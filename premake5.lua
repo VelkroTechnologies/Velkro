@@ -14,6 +14,7 @@ project "Velkro"
 	location "Velkro"
 	kind "StaticLib"
 	language "C++"
+	cppdialect "C++20"
 
 	targetdir ("bin/%{prj.name}/" .. outputdir)
 	objdir ("bin-int/%{prj.name}/" .. outputdir)
@@ -21,7 +22,8 @@ project "Velkro"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.c"
 	}
 
 	filter "system:windows"
@@ -40,21 +42,22 @@ project "Velkro"
 		}
 
 	filter "configurations:Debug"
-		defines "VLK_DEBUG"
+		defines "VLK_DEBUG_CONFIG"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "VLK_RELEASE"
+		defines "VLK_RELEASE_CONFIG"
 		optimize "On"
 
 	filter "configurations:Distribution"
-		defines "VLK_DISTRIBUTION"
+		defines "VLK_DISTRIBUTION_CONFIG"
 		optimize "On"
 
 project "Runtime"
 	location "Runtime"
 	kind "ConsoleApp"
 	language "C++"
+	cppdialect "C++20"
 
 	targetdir ("bin/%{prj.name}/" .. outputdir)
 	objdir ("bin-int/%{prj.name}/" .. outputdir)
@@ -63,6 +66,7 @@ project "Runtime"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.c"
 	}
 
 	includedirs
@@ -83,6 +87,11 @@ project "Runtime"
 		{
 			"VLK_PLATFORM_WINDOWS"
 		}
+
+		links
+		{
+			"opengl32"
+		}
 	
 	filter "system:linux"
 		defines
@@ -96,13 +105,13 @@ project "Runtime"
 		}
 
 	filter "configurations:Debug"
-		defines "VLK_DEBUG"
+		defines "VLK_DEBUG_CONFIG"
 		symbols "On"
 
 	filter "configurations:Release"
-		defines "VLK_RELEASE"
+		defines "VLK_RELEASE_CONFIG"
 		optimize "On"
 
 	filter "configurations:Distribution"
-		defines "VLK_DISTRIBUTION"
+		defines "VLK_DISTRIBUTION_CONFIG"
 		optimize "On"

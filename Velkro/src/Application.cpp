@@ -2,15 +2,32 @@
 
 namespace Velkro
 {
+	Application::Application()
+	{
+		Window::SetEventCallback(OnEvent);
+	}
+	Application::~Application()
+	{
+	}
+
+	void Application::OnEvent(std::unique_ptr<Event> event)
+	{
+		InputStack::OnEvent(event);
+	}
+
 	void Application::Run()
 	{
-		Window window = Window("lalalallaa", 800, 600);
+		Window window = Window("Velkro Engine", 800, 600);
+
+		std::unique_ptr<InputLayer> inputClass = std::make_unique<ExampleClass>();
+		std::unique_ptr<InputLayer> inputClass2 = std::make_unique<ExampleClass2>();
+
+		InputStack::PushLayer(inputClass);
+		InputStack::PushLayer(inputClass2);
 
 		while (m_Running)
 		{
 			window.Update();
-
-			Log::Info("1,2,3 Now spit out the rest! YOU: %d, %d, %d", 4, 5, 6);
 		}
 	}
 }
