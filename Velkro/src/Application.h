@@ -1,10 +1,13 @@
 #pragma once
 
-#include "Core.h"
-#include "Log.h"
+#include "Renderer/Renderer.h"
+
+#include "Window.h"
+
+#include "GUIinput.h"
+#include "GUI.h"
 
 #include "Input.h"
-#include "ExampleInputLayer.h"
 
 namespace Velkro
 {

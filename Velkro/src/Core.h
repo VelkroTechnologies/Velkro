@@ -1,7 +1,11 @@
-#ifdef VLK_PLATFORM_WINDOWS
-    #include "platform/windows/WindowsWindow.h"
-#endif
+#pragma once
+
+#define VLK_DATA_DIR
 
 #ifdef VLK_PLATFORM_LINUX
-    #include "platform/linux/LinuxWindow.h"
+	#undef VLK_DATA_DIR
+	#define VLK_DATA_DIR "data/"
+#elif VLK_PLATFORM_WINDOWS
+	#undef VLK_DATA_DIR
+	#define VLK_DATA_DIR "../data/"
 #endif

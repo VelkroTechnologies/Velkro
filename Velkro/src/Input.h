@@ -47,6 +47,16 @@ namespace Velkro
 			}
 		}
 
+		static void Clear()
+		{
+			for (size_t i = 0; i < m_Layers.size(); i++)
+			{
+				m_Layers[i].reset();
+			}
+
+			m_Layers.clear();
+		}
+
 	private:
 		static inline std::vector<std::unique_ptr<InputLayer>> m_Layers;
 	};

@@ -10,6 +10,10 @@ workspace "Velkro"
 
 outputdir = "%{cfg.buildcfg}"
 
+include "Velkro/vendor/glfw"
+include "Velkro/vendor/glad"
+include "Velkro/vendor/imgui"
+
 project "Velkro"
 	location "Velkro"
 	kind "StaticLib"
@@ -26,13 +30,21 @@ project "Velkro"
 		"%{prj.name}/src/**.c"
 	}
 
+	includedirs
+	{
+		"Velkro/vendor/glfw/include",
+		"Velkro/vendor/glad/include",
+		"Velkro/vendor/glm",
+		"Velkro/vendor/imgui"
+	}
+
 	filter "system:windows"
 		staticruntime "On"
 		systemversion "latest"
    
 		defines
 		{
-			"VLK_PLATFORM_WINDOWS"
+			"VLK_PLATFORM_WINDOWS"		
 		}
 	
 	filter "system:linux"
@@ -72,11 +84,18 @@ project "Runtime"
 	includedirs
 	{
 		"Velkro/src",
+		"Velkro/vendor/glfw/include",
+		"Velkro/vendor/glad/include",
+		"Velkro/vendor/glm",
+		"Velkro/vendor/imgui"
 	}
 
 	links
 	{
 		"Velkro",
+		"ImGUI",
+		"GLFW",
+		"GLAD",		
 	}
 
 	filter "system:windows"
@@ -97,12 +116,7 @@ project "Runtime"
 		defines
 		{
 			"VLK_PLATFORM_LINUX"
-		}
-
-		links
-		{
-			"X11"
-		}
+		}		
 
 	filter "configurations:Debug"
 		defines "VLK_DEBUG_CONFIG"
