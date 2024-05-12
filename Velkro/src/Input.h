@@ -10,14 +10,14 @@ namespace Velkro
 	class InputLayer
 	{
 	public:
-		virtual void OnEvent(std::unique_ptr<Event>& event) = 0;
+		virtual void OnEvent(Event* event) = 0;
 		virtual bool PassEvent() = 0;
 	};
 
 	class InputStack
 	{
 	public:
-		static void OnEvent(std::unique_ptr<Event>& event)
+		static void OnEvent(Event* event)
 		{
 			for (size_t i = 0; i < m_Layers.size(); i++)
 			{

@@ -4,6 +4,8 @@
 
 #include "Window.h"
 
+#include "ECS/Entity.h"
+
 #include "GUIinput.h"
 #include "GUI.h"
 
@@ -17,7 +19,7 @@ namespace Velkro
 		Application();
 		~Application();
 
-		static void OnEvent(std::unique_ptr<Event> event);
+		static void OnEvent(Event* event);
 
 		void Run();
 

@@ -35,7 +35,8 @@ project "Velkro"
 		"Velkro/vendor/glfw/include",
 		"Velkro/vendor/glad/include",
 		"Velkro/vendor/glm",
-		"Velkro/vendor/imgui"
+		"Velkro/vendor/imgui",
+		"Velkro/vendor/stb"
 	}
 
 	filter "system:windows"
@@ -87,7 +88,8 @@ project "Runtime"
 		"Velkro/vendor/glfw/include",
 		"Velkro/vendor/glad/include",
 		"Velkro/vendor/glm",
-		"Velkro/vendor/imgui"
+		"Velkro/vendor/imgui",
+		"Velkro/vendor/stb"
 	}
 
 	links

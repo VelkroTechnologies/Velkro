@@ -9,10 +9,13 @@
 #include <sstream>
 
 #include "Renderer/Renderer.h"
-#include "Window.h"
 #include "Core.h"
 
 #include "Scene.h"
+
+#include "Viewport.h"
+
+#include "UUID.h"
 
 namespace Velkro
 {
@@ -31,10 +34,10 @@ namespace Velkro
 			SetStyle();
 
 			ImGui_ImplGlfw_InitForOpenGL(window.GetGLFWWindow(), true);
-			ImGui_ImplOpenGL3_Init("#version 120");
+			ImGui_ImplOpenGL3_Init("#version 460");
 			
 			std::stringstream path;
-			path << VLK_DATA_DIR << "font/Roboto-Regular.ttf";
+			path << VLK_ASSETS_DIR << "font/Roboto-Regular.ttf";
 			
 			m_Font = io.Fonts->AddFontFromFileTTF(path.str().c_str(), 18);
 		}
@@ -49,13 +52,30 @@ namespace Velkro
 
 			ImGui::PushFont(m_Font);
 
-			ImGui::Begin("Environment");
+			ImGui::BeginMainMenuBar(); /* Menu Bar */
 
-			ImGui::ColorPicker3("Background Colour", glm::value_ptr(Renderer::BackgroundColour));
+			if (ImGui::BeginMenu("File"))
+			{
+				ImGui::TextDisabled("Save");
+				ImGui::TextDisabled("Export");
+				ImGui::TextDisabled("Open");
 
-			ImGui::End();
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("View"))
+			{
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit"))
+			{
+				ImGui::EndMenu();
+			}
 
+			ImGui::EndMainMenuBar();
+
+			ViewportGUI::Update();
 			SceneHierarchy::Update();
+			Properties::Update();
 
 			ImGui::PopFont();
 
@@ -73,33 +93,7 @@ namespace Velkro
 		}
 
 	private:
-		class SceneHierarchy
-		{
-		public:
-			static void Update()
-			{
-				std::stringstream windowTitle;
-				windowTitle << "Scene Hierarchy - Main Scene: " << SceneManager::GetActiveScene()->ID;
-
-				ImGui::Begin(windowTitle.str().c_str());
-
-				//TODO: Add objects to render and add to scenes.
-				for (Scene* scene : SceneManager::GetScenes())
-				{
-					if (ImGui::TreeNode(scene->ID.c_str()))
-					{
-						ImGui::TextDisabled("Scene assets to be here soon.");
-
-						ImGui::TreePop();
-					}
-				}						
-
-				ImGui::End();
-			}
-		};
-
 		static inline ImFont* m_Font;
-
 		static void SetStyle()
 		{
 			ImVec4* colors = ImGui::GetStyle().Colors;
@@ -178,5 +172,148 @@ namespace Velkro
 			style.LogSliderDeadzone                 = 4;
 			style.TabRounding                       = 4;
 		}
+
+		static inline bool m_ViewportClosed = false;
+		static inline bool m_SceneHierarchyClosed = false;
+
+		class ViewportGUI
+		{
+		public:
+			static void Update()
+			{
+				std::stringstream windowTitle;
+				windowTitle << "Viewport - " << SceneManager::GetActiveScene()->ID << "###"; 
+
+				ImGui::Begin(windowTitle.str().c_str());			
+
+				float windowWidth = ImGui::GetContentRegionAvail().x;
+				float windowHeight = ImGui::GetContentRegionAvail().y;
+
+				Viewport::SetSize(glm::vec2(windowWidth, windowHeight));
+				glViewport(0, 0, windowWidth, windowHeight);
+
+				ImVec2 windowPos = ImGui::GetCursorScreenPos();
+
+				ImGui::GetWindowDrawList()->AddImage
+				(
+					(void *)Viewport::GetTexture(), 
+					ImVec2(windowPos.x, windowPos.y), 
+					ImVec2(windowPos.x + windowWidth, windowPos.y + windowHeight),
+					ImVec2(0, 1), 
+					ImVec2(1, 0)
+				);
+
+				ImGui::End();
+			}
+
+		private:
+		};
+
+		class SceneHierarchy
+		{
+		public:
+			static void Update()
+			{
+				ImGui::Begin("Scene Hierarchy");
+
+				m_Size = glm::vec2(ImGui::GetWindowSize().x, ImGui::GetWindowSize().y);
+
+				//TODO: Add objects to render and add to scenes.
+				for (Scene* scene : SceneManager::GetScenes())
+				{
+					if (ImGui::TreeNode(scene->ID.c_str()))
+					{
+						if (ImGui::Button("Set Startup Scene")) 
+							SceneManager::SetStartupScene(scene->ID);
+						if (ImGui::Button("View Scene")) 
+							SceneManager::SetActiveScene(scene->ID);
+
+						if (ImGui::TreeNode("Entities"))
+						{
+							for (Entity* entity : scene->entityManager.GetEntities())
+							{
+								if (ImGui::TreeNode(entity->GetUUID().ID.c_str()))
+								{
+									ImGui::TextDisabled("UUID: %s", entity->GetUUID()().c_str());
+
+									for (Component* component : entity->GetComponents())
+									{
+										const char* componentType;
+
+										switch (component->GetType())
+										{
+										case VLK_SPRITE_COMPONENT:
+											componentType = "Sprite Component";
+										break;
+										}
+
+										if (ImGui::Selectable(componentType))
+										{
+											m_SelectedComponent	= component;
+										}									
+									}
+
+									ImGui::TreePop();
+								}
+							}
+
+							ImGui::TreePop();
+						}						
+
+						ImGui::TreePop();
+					}
+				}						
+
+				ImGui::End();
+			}
+
+			static Component* GetSelectedComponent()
+			{
+				return m_SelectedComponent;
+			}
+
+		private:
+			static inline glm::vec2 m_Position;
+			static inline glm::vec2 m_Size;
+
+			static inline Component* m_SelectedComponent = nullptr;
+		};
+
+		class Properties
+		{
+		public:
+			static void Update()
+			{
+				ImGui::Begin("Properties");
+				
+				if (SceneHierarchy::GetSelectedComponent() != nullptr)
+				{
+					switch (SceneHierarchy::GetSelectedComponent()->GetType())
+					{
+						case VLK_SPRITE_COMPONENT:
+						{
+							SpriteComponent* component = (SpriteComponent*)SceneHierarchy::GetSelectedComponent();
+
+							ImGui::PushID(1);
+							ImGui::Text("Position");
+							ImGui::InputFloat2("##", glm::value_ptr(component->Position));
+							ImGui::PopID();
+
+							ImGui::PushID(2);
+							ImGui::Text("Size");
+							ImGui::InputFloat2("##", glm::value_ptr(component->Size));
+							ImGui::PopID();
+
+							ImGui::PushID(3);
+							ImGui::Text("Rotation");
+							ImGui::InputFloat("##", &component->Rotation);
+							ImGui::PopID();
+						}
+					}
+				}				
+
+				ImGui::End();
+			}
+		};
 	};
 }

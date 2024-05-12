@@ -9,23 +9,6 @@
 
 namespace Velkro
 {
-	class AssetPackage
-	{
-	public:
-		AssetPackage()
-		{
-		}
-
-		~AssetPackage()
-		{
-		}
-
-		/* Data Pushing to Data Vector */
-
-	private:
-		/* Data Vector */
-	};
-
 	class Scene
 	{
 	public:
@@ -35,11 +18,25 @@ namespace Velkro
 		}
 		~Scene()
 		{
+			entityManager.Destroy();
+		}
+		
+		void AddEntity(Entity* entity)
+		{
+			entityManager.AddEntity(entity);
+		}
+
+		void RemoveEntity(UUID ID)
+		{
+			entityManager.RemoveEntity(ID);
 		}
 
 		void Update()
 		{
+			entityManager.Update();
 		}
+
+		EntityManager entityManager;
 
 		std::string ID;
 	};
@@ -79,6 +76,21 @@ namespace Velkro
 			}
 		}
 
+		static Scene* GetScene(std::string ID)
+		{
+			for (Scene* scene : m_Scenes)
+			{
+				if (scene->ID == ID)
+				{
+					return scene;
+				}
+			}
+
+			VLK_ERROR("Scene Manager: You cannot access scene \"%o\" as it doesn't exist!", ID.c_str());
+
+			return nullptr;
+		}
+
 		static void SetActiveScene(std::string ID)
 		{
 			bool success = false;
@@ -100,10 +112,35 @@ namespace Velkro
 				VLK_ERROR("Can't set active scene as it doesn't exist!");
 			}
 		}
+		static void SetStartupScene(std::string ID)
+		{
+			bool success = false;
+
+			for (size_t i = 0; i < m_Scenes.size(); i++)
+			{
+				if (m_Scenes[i]->ID == ID)
+				{
+					m_StartupSceneIndex = i;
+
+					success = true;
+
+					break;
+				}
+			}
+
+			if (!success)
+			{
+				VLK_ERROR("Can't set startup scene as it doesn't exist!");
+			}
+		}
 
 		static Scene* GetActiveScene()
 		{
 			return m_Scenes[m_ActiveSceneIndex];
+		}
+		static Scene* GetStartupScene()
+		{
+			return m_Scenes[m_StartupSceneIndex];
 		}
 
 		static std::vector<Scene*>& GetScenes()
@@ -113,18 +150,22 @@ namespace Velkro
 
 		static void Update()
 		{
-			for (Scene* scene : m_Scenes)
+			for (size_t i = 0; i < m_Scenes.size(); i++)
 			{
-				scene->Update();
+				if (m_ActiveSceneIndex == i)
+				{
+					m_Scenes[i]->Update();
+				}
 			}
 		}
 
 		static void Destroy()
 		{
-			for (auto it = m_Scenes.begin(); it != m_Scenes.end(); ++it)
+			for (size_t i = 0; i < m_Scenes.size(); i++)
 			{
-				delete* it;
-				m_Scenes.erase(it);
+				delete m_Scenes[i];
+
+				m_Scenes.erase(m_Scenes.begin() + i);
 			}
 		}
 
@@ -133,5 +174,6 @@ namespace Velkro
 
 		static inline std::string m_ActiveScene;
 		static inline size_t m_ActiveSceneIndex;
+		static inline size_t m_StartupSceneIndex;
 	};
 }

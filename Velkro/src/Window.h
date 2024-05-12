@@ -1,6 +1,8 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+
 #include <memory>
 
 #include "Event.h"
@@ -8,13 +10,13 @@
 
 namespace Velkro
 {
-   	typedef void (*EventCallback)(std::unique_ptr<Event> event);
+   	typedef void (*EventCallback)(Event* event);
 
    	class Window
    	{
    	public:
-		Window(const char* title, int width, int height)
-			: m_Title(title), m_Width(width), m_Height(height)
+		Window(const char* title, glm::vec2 size)
+			: m_Title(title), m_Size(size)
 		{
 			if (!m_Init)
 			{
@@ -24,51 +26,51 @@ namespace Velkro
 				}
 			}
 
-			m_Window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+			m_Window = glfwCreateWindow(size.x, size.y, title, nullptr, nullptr);
 
 			glfwMakeContextCurrent(m_Window);
 		}
-      	~Window()
-      	{
+	  	~Window()
+	  	{
 			glfwTerminate();
-      	}
+	  	}
 
-      	void Update()
-      	{
+	  	void Update()
+	  	{
 			glfwSetKeyCallback(m_Window, OnKeyEvent);
 			glfwSetMouseButtonCallback(m_Window, OnMouseButtonEvent);
 
 			glfwSwapBuffers(m_Window);			
 			glfwPollEvents();
-      	} 
-      	
-      	void SetTitle(const char* title)
-      	{
+	  	} 
+	  	
+	  	void SetTitle(const char* title)
+	  	{
 			glfwSetWindowTitle(m_Window, title);
 			m_Title = title;
-      	}
-      	const char* GetTitle()
-      	{
+	  	}
+	  	const char* GetTitle()
+	  	{
 			return m_Title;
-      	}
+	  	}
 
-      	void SetSize(unsigned int width, unsigned int height)
-      	{
-			glfwSetWindowSize(m_Window, width, height);
-			m_Width = width; m_Height = height;
-      	}
-      	void GetSize(unsigned int& width, unsigned int& height)
-      	{
-			width = m_Width;
-			height = m_Height;
-      	}
+	  	void SetSize(glm::vec2& size)
+	  	{
+			glfwSetWindowSize(m_Window, size.x, size.y);
+
+			m_Size = size;
+	  	}
+	  	glm::vec2 GetSize()
+	  	{
+			return m_Size;
+	  	}
 
 		bool WantClose()
 		{
 			return glfwWindowShouldClose(m_Window);
 		}
 
-      	static void SetEventCallback(EventCallback callback)
+	  	static void SetEventCallback(EventCallback callback)
 		{
 			m_EventCallback = callback;
 		}
@@ -82,12 +84,12 @@ namespace Velkro
 		/* Callbacks */
 		static void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			m_EventCallback(std::make_unique<Velkro::KeyEvent>((Action)action, (EventCode)key));
+			m_EventCallback(new KeyEvent((Action)action, (EventCode)key));
 		}
 		
 		static void OnMouseButtonEvent(GLFWwindow* window, int button, int action, int mods)
 		{
-			m_EventCallback(std::make_unique<Velkro::MouseButtonEvent>((Action)action, (EventCode)button));
+			m_EventCallback(new MouseButtonEvent((Action)action, (EventCode)button));
 		}
 
 		GLFWwindow* m_Window;
@@ -97,7 +99,7 @@ namespace Velkro
 		static inline EventCallback m_EventCallback;
 
 		const char* m_Title;
-		int m_Width;
-		int m_Height;
+		
+		glm::vec2 m_Size;
    	};
 }

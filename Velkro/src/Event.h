@@ -156,8 +156,6 @@ namespace Velkro
 	{
 	public:
 		virtual EventType GetEventType() = 0;
-		virtual Action GetAction() = 0;
-		virtual EventCode GetEventCode() = 0;
 	};
 
 	class KeyEvent : public Event
@@ -175,13 +173,15 @@ namespace Velkro
 		{
 			return VLK_KEY_EVENT;
 		}
-		Action GetAction() override
-		{
-			return m_Action;
-		}
-		EventCode GetEventCode() override
+
+		EventCode GetKeyCode()
 		{
 			return m_Code;
+		}
+
+		Action GetAction()
+		{
+			return m_Action;
 		}
 
 	private:
@@ -204,13 +204,15 @@ namespace Velkro
 		{
 			return VLK_MOUSE_EVENT;
 		}
-		Action GetAction() override
-		{
-			return m_Action;
-		}
-		EventCode GetEventCode() override
+
+		EventCode GetMouseButtonEventCode()
 		{
 			return m_Code;
+		}
+
+		Action GetAction()
+		{
+			return m_Action;
 		}
 
 	private:

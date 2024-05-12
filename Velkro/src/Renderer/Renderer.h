@@ -18,6 +18,11 @@ namespace Velkro::Renderer
 		{
 			VLK_FATAL("Renderer: GLAD failed to initialize!");
 		}
+		else
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
 	}
 
 	inline void Update()
@@ -25,5 +30,10 @@ namespace Velkro::Renderer
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glClearColor(BackgroundColour.x, BackgroundColour.y, BackgroundColour.z, 1.0f);
-	}	
+	}
+
+	inline void ClearColourBuffer()
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
 }
