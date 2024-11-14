@@ -1,0 +1,1 @@
+premake5 --file=PROJECT.lua vs2022

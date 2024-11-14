@@ -1,0 +1,1 @@
+del /s /q *.sln & del /s /q *.vcxproj & del /s /q *.vcxproj.filters & del /s /q *.vcxproj.user & rmdir /S /Q -r ".vs" & rmdir -r "bin" & rmdir -r "bin-int" & rmdir -r "vendor/bin" & rmdir -r "vendor/bin-int"
