@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Log.h"
+#include "Window.h"
 
 namespace Velkro
 {
@@ -21,7 +22,9 @@ namespace Velkro
     public:
         void Initialize(EntrypointFunction entrypoint, LoopFunction loop, ExitpointFunction exitpoint);
 
-    private:
+    private:        
         bool m_Running = true;
+
+        EventFunction m_EventFunction;
     };
 }

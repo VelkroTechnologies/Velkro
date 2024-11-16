@@ -1,1 +1,1 @@
-premake5 --file=PROJECT.lua vs2022
+premake5 --file=VELKRO.lua vs2022

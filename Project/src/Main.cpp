@@ -7,24 +7,45 @@ namespace Project
 {
 	using namespace Velkro;
 
-	static ExitCode Entry()
+	Window window;
+
+	static void OnEvent(Event* event)
 	{
+		if (event->GetType() == Character)
+		{
+			VLK_INFO(std::string(1, static_cast<CharacterEvent*>(event)->GetCodepoint()));
+		}
+	}
+
+	ExitCode Entry()
+	{
+		window = Window("Project", 800, 600);
+
+		window.SetEventCallback(OnEvent);
+
 		return ExitCode::Success;
 	}
 
-	static ExitCode Loop()
-	{
-		uint64_t time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	ExitCode Loop()
+	{		
+		window.Update();
 
-		VLK_INFO(std::to_string(time));
+		if (window.WindowClosed())
+		{
+			return ExitCode::Exit;
+		}
 
 		return ExitCode::Success;
 	}
 
-	static Velkro::ExitCode Exit()
+	ExitCode Exit()
 	{
+		window.Destroy();
+
+		VLK_INFO("Look! The window closed!");
+
 		return ExitCode::Exit;
-	}
+	}	
 }
 
 int main()

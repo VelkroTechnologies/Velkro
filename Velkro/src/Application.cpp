@@ -4,6 +4,11 @@ namespace Velkro
 {
 	void Application::Initialize(EntrypointFunction entrypoint, LoopFunction loop, ExitpointFunction exitpoint)
 	{
+		if (!glfwInit())
+		{
+			VLK_CORE_FATAL("GLFW initialization failed.");
+		}
+
 		int entryExitCode = entrypoint();
 
 		if (entryExitCode == Error)
@@ -37,10 +42,12 @@ namespace Velkro
 			}
 			else if (loopExitCode == Exit)
 			{
-				VLK_CORE_DEBUG("Exiting program.");
+				VLK_CORE_DEBUG("Exiting loop.");
 
-				exit(0);
+				break;
 			}
+
+			glfwPollEvents();
 		}
 
 		VLK_CORE_DEBUG("Exiting program.");
@@ -57,5 +64,7 @@ namespace Velkro
 		{
 			VLK_CORE_DEBUG("Exiting program (In exitpoint).");
 		}
+
+		glfwTerminate();
 	}
 }
